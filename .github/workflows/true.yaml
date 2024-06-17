@@ -25,12 +25,12 @@ jobs:
             echo "PR Number: ${{ env.PR_NUMBER }}"
             echo "PR Author: ${{ env.PR_AUTHOR }}"
         
-            - name: Get PR data
-            id: pr-data
-            uses: tj-actions/branch-names@v7.9
-            with:
-              github-token: ${{ secrets.GITHUB_TOKEN }}
-              pr-number: ${{ env.PR_NUMBER }}
+        - name: Get PR data
+          id: pr-data
+          uses: tj-actions/branch-names@v7.9
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            pr-number: ${{ env.PR_NUMBER }}
     
         - name: Set PR base branch
           run: echo "PR_BASE=${{ steps.pr-data.outputs.base }}" >> $GITHUB_ENV
