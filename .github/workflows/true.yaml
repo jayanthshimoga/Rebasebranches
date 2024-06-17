@@ -28,49 +28,10 @@ jobs:
             echo "PR Author: ${{ env.PR_AUTHOR }}"
             echo "Base Branch: ${{ env.PR_BASE }}"
             echo "Head Branch: ${{ env.PR_HEAD }}"
-        
-        # - name: Get PR data
-        #   id: pr-data
-        #   uses: tj-actions/branch-names@v8
-        #   with:
-        #     github-token: ${{ secrets.GITHUB_TOKEN }}
-        #     pr-number: ${{ env.PR_NUMBER }}
-    
-        # - name: GET references
-        #   run: 
-        #     if [[ "$GITHUB_REF" != "refs/tags/"* ]]; then
-        #         BASE_REF=$(printf "%q" "$GITHUB_BASE_REF")
-        #         HEAD_REF=$(printf "%q" "$GITHUB_HEAD_REF")
-        #         REF=$(printf "%q" "$GITHUB_REF")
-            
-        #         BASE_REF=${BASE_REF/refs\/heads\//}
-        #         HEAD_REF=${HEAD_REF/refs\/heads\//}
-        #         REF_BRANCH=${REF/refs\/pull\//}
-        #         REF_BRANCH=${REF_BRANCH/refs\/heads\//}
-                
-        #         echo "base=$(eval printf "%s" "$BASE_REF")" >> "$GITHUB_OUTPUT"
-        #         echo "head=$(eval printf "%s" "$HEAD_REF")" >> "$GITHUB_OUTPUT"
-        #         echo "ref_branch=$(eval printf "%s" "$REF_BRANCH")" >> "$GITHUB_OUTPUT"
-        #     else
-        #         BASE_REF=$(printf "%q" "$GITHUB_EVENT_BASE_REF")
-        #         BASE_REF=${BASE_REF/refs\/heads\/$INPUTS_STRIP_TAG_PREFIX/}
-                
-        #         echo "base_ref_branch=$(eval printf "%s" "$BASE_REF")" >> "$GITHUB_OUTPUT"
-        #     fi
-
-        # - name: Determine action based on PR title
-        #   id: determine-action
-        #   run: |
-        #     if [[ "${{ env.PR_TITLE }}" == *"rebase:"* ]]; then
-        #         echo "ACTION=rebase" >> $GITHUB_ENV
-        #     elif [[ "${{ env.PR_TITLE }}" == *"merge:"* ]]; then
-        #         echo "ACTION=merge" >> $GITHUB_ENV
-        #     else
-        #         echo "No action required"
-        #     exit 0
 
         - name: Rebase PR
           if: contains(env.PR_TITLE, 'rebase:') || contains(env.PR_TITLE, 'merge:')
           uses: cirrus-actions/rebase@1.8
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PR_NUMBER: ${{ env.PR_NUMBER }}
