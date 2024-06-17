@@ -58,17 +58,18 @@ jobs:
         #         echo "base_ref_branch=$(eval printf "%s" "$BASE_REF")" >> "$GITHUB_OUTPUT"
         #     fi
 
-        - name: Determine action based on PR title
-          id: determine-action
-          run: |
-            if [[ "${{ env.PR_TITLE }}" == *"rebase:"* ]]; then
-                echo "ACTION=rebase" >> $GITHUB_ENV
-            elif [[ "${{ env.PR_TITLE }}" == *"merge:"* ]]; then
-                echo "ACTION=merge" >> $GITHUB_ENV
-            else
-                echo "No action required"
-            exit 0
+        # - name: Determine action based on PR title
+        #   id: determine-action
+        #   run: |
+        #     if [[ "${{ env.PR_TITLE }}" == *"rebase:"* ]]; then
+        #         echo "ACTION=rebase" >> $GITHUB_ENV
+        #     elif [[ "${{ env.PR_TITLE }}" == *"merge:"* ]]; then
+        #         echo "ACTION=merge" >> $GITHUB_ENV
+        #     else
+        #         echo "No action required"
+        #     exit 0
 
         - name: Print determined action
+          if: contains(env.PR_TITLE, 'rebase:') || contains(env.PR_TITLE, 'merge:')
           run: |
-            echo "Action determined: ${{ env.ACTION }}"
+            echo "Action determined: rebase"
