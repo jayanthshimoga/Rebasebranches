@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Checkout repository
-          uses: actions/checkout@v3
+          uses: actions/checkout@v2
           with:
             token: ${{ secrets.GITHUB_TOKEN }}
         
@@ -68,7 +68,7 @@ jobs:
         #     else
         #         echo "No action required"
         #     exit 0
-        
+
         - name: Rebase PR
           if: contains(env.PR_TITLE, 'rebase:') || contains(env.PR_TITLE, 'merge:')
           uses: cirrus-actions/rebase@1.8
