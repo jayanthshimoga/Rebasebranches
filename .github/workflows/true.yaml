@@ -5,37 +5,49 @@ on:
 
 jobs:
   rebase:
-    if: github.event.issue.pull_request != null && contains(github.event.comment.body, '/rebase')
+    if: contains(github.event.pull_request.title, 'rebase:') || contains(github.event.pull_request.title, 'merge:')
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: Extract PR details
+          id: pr-details
+          run: |
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+            echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}" >> $GITHUB_ENV
+            echo "PR_TITLE=${{ github.event.pull_request.title }}" >> $GITHUB_ENV
+
+        - name: Get PR data
+          id: pr-data
+          uses: tj-actions/branch-names@v7.9
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            pr-number: ${{ env.PR_NUMBER }}
+
+        - name: Set PR base branch
+          run: echo "PR_BASE=${{ steps.pr-data.outputs.base }}" >> $GITHUB_ENV
+
+        - name: Set PR head branch
+          run: echo "PR_HEAD=${{ steps.pr-data.outputs.head }}" >> $GITHUB_ENV
+
+        - name: Determine action based on PR title
+          id: determine-action
+          run: |
+            if [[ "${{ env.PR_TITLE }}" == *"rebase:"* ]]; then
+                echo "ACTION=rebase" >> $GITHUB_ENV
+            elif [[ "${{ env.PR_TITLE }}" == *"merge:"* ]]; then
+                echo "ACTION=merge" >> $GITHUB_ENV
+            else
+                echo "No action required"
+                exit 1
+            fi
+
+        - name: Perform rebase
+          if: env.ACTION == 'rebase'
+          uses: cirrus-actions/rebase@v1.8
+          with:
             token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract PR details
-        id: pr-details
-        run: |
-          echo "PR_NUMBER=$(jq -r .pull_request.number <<< '${{ toJson(github.event.issue) }}')" >> $GITHUB_ENV
-          echo "PR_AUTHOR=$(jq -r .pull_request.user.login <<< '${{ toJson(github.event.issue) }}')" >> $GITHUB_ENV
-
-      - name: Get PR data
-        id: pr-data
-        uses: tj-actions/branch-names@v7.9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          pr-number: ${{ env.PR_NUMBER }}
-
-      - name: Set PR base branch
-        run: echo "PR_BASE=${{ steps.pr-data.outputs.base }}" >> $GITHUB_ENV
-
-      - name: Set PR head branch
-        run: echo "PR_HEAD=${{ steps.pr-data.outputs.head }}" >> $GITHUB_ENV
-
-      - name: Perform rebase
-        uses: cirrus-actions/rebase@v1.8
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: ${{ env.PR_BASE }}
-          head: ${{ env.PR_HEAD }}
+            base: ${{ env.PR_BASE }}
+            head: ${{ env.PR_HEAD }}
