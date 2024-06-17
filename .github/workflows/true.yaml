@@ -68,9 +68,9 @@ jobs:
         #     else
         #         echo "No action required"
         #     exit 0
-
-        - name: Print determined action
+        
+        - name: Rebase PR
           if: contains(env.PR_TITLE, 'rebase:') || contains(env.PR_TITLE, 'merge:')
           uses: cirrus-actions/rebase@1.8
           env:
-            PR_NUMBER: ${{ env.PR_NUMBER }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
