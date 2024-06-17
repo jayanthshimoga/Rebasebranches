@@ -27,7 +27,7 @@ jobs:
         
         - name: Get PR data
           id: pr-data
-          uses: tj-actions/branch-names@v7.9
+          uses: tj-actions/branch-names@v8
           with:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             pr-number: ${{ env.PR_NUMBER }}
