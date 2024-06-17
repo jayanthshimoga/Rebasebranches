@@ -72,7 +72,6 @@ jobs:
         - name: Print determined action
           if: contains(env.PR_TITLE, 'rebase:') || contains(env.PR_TITLE, 'merge:')
           uses: cirrus-actions/rebase@1.8
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-            base: ${{ env.PR_BASE }}
-            head: ${{ env.PR_HEAD }}
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PR_NUMBER: ${{ env.PR_NUMBER }}
