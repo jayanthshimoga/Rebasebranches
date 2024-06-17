@@ -5,7 +5,6 @@ on:
 
 jobs:
   rebase:
-    if: contains(github.event.pull_request.title, 'rebase:') || contains(github.event.pull_request.title, 'merge:')
     runs-on: ubuntu-latest
 
     steps:
